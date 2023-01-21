@@ -46,3 +46,20 @@
 
     (log2 (* u2 u8))
 )
+
+;; Day 6 - Strings
+(define-read-only (say-hello) 
+    "Hello World"
+)
+
+(define-read-only (say-hello-world) 
+    (concat "Hello" " World"
+)
+)
+
+(define-read-only (say-hello-world-name) 
+    (concat 
+        (concat "Hello" " World,")
+         " Gary Riger"
+    )
+)
