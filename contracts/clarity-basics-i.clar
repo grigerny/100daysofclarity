@@ -63,3 +63,41 @@
          " Gary Riger"
     )
 )
+
+;; Day 7 - And/Or
+(define-read-only (and-i) 
+
+(and true true)
+
+)
+
+(define-read-only (and-ii) 
+
+(and true false)
+
+)
+
+(define-read-only (and-iii)     
+    (and 
+        (> u2 u1) 
+        (not false) 
+        true
+    )
+)
+
+(define-read-only (or-i) 
+(or true false)
+)
+
+(define-read-only (or-ii) 
+(or (not true) false)
+)
+
+(define-read-only (or-iii) 
+    (or  
+        (< u2 u1) 
+        (not true) 
+        (and (> u2 u1) true)
+    )
+)
+
