@@ -34,3 +34,25 @@ num
         (is-some boolean)    
     )
 )   
+
+;; Day 10 - Intro to Variables and Constants
+(define-constant fav-num u10)
+(define-constant fav-string "Hi")
+(define-data-var fav-num-var uint u11)
+(define-data-var fav-name-string-var (string-ascii 48) " Gary Riger")
+
+(define-read-only (show-constant)  
+    fav-string
+)
+(define-read-only (show-constant-double)  
+    (* fav-num u2)
+)
+(define-read-only (show-fav-num-var) 
+    (var-get fav-num-var)
+)   
+(define-read-only (show-var-double) 
+    (* u2 (var-get fav-num-var))
+)
+(define-read-only (say-hi) 
+    (concat fav-string (var-get fav-name-string-var))
+)
