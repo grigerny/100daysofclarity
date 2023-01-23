@@ -56,3 +56,17 @@ num
 (define-read-only (say-hi) 
     (concat fav-string (var-get fav-name-string-var))
 )
+
+;; Day 11 - Public Functions & Resources
+(define-read-only (response-example)
+(ok u10)
+) 
+
+(define-public (change-name (new-name (string-ascii 24)))
+   (ok  (var-set fav-name-string-var new-name) )
+)
+
+(define-public (change-fav-num (new-num uint))
+    (ok (var-set fav-num-var new-num))
+)
+
