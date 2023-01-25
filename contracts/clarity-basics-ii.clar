@@ -70,3 +70,21 @@ num
     (ok (var-set fav-num-var new-num))
 )
 
+;; Day 12 - Tuples & Merging
+(define-read-only (read-tuple-i) 
+  {
+        user-principal: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+        user-name: "John",
+        user-balance: u10
+    }
+)
+
+(define-public (write-tuple-i (new-user-principal principal) (new-user-name (string-ascii 24)) (new-user-balance uint))
+ (ok
+ {
+        user-principal: new-user-principal,
+        user-name: new-user-name,
+        user-balance: new-user-balance
+    }
+ )
+)
