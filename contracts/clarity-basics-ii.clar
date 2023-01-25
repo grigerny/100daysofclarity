@@ -88,3 +88,41 @@ num
     }
  )
 )
+(define-data-var original {user-principal: principal, user-name: (string-ascii 24), user-balance: uint}
+{
+    user-principal: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+    user-name: "Gary",
+    user-balance: u50
+}
+)
+
+(define-read-only (read-original) 
+    (var-get original)
+)
+
+(define-public (merge-principal (new-user-principal principal))
+    (ok (merge 
+        (var-get original)
+        {user-principal: new-user-principal}
+        )
+    )   
+)
+
+(define-public (merge-user-name (new-user-name (string-ascii 24 ))) 
+    (ok (merge 
+        (var-get original) 
+        {user-name: new-user-name}
+    ))
+
+)
+
+(define-public (merge-all (new-user-principal principal) (new-user-name (string-ascii 24)) (new-user-balance uint))
+(ok (merge
+    (var-get original)
+    {
+        user-principal: new-user-principal,
+        user-name: new-user-name,
+        user-balance: new-user-balance
+    }
+    ))
+)
