@@ -137,3 +137,17 @@ tx-sender
 (is-eq admin tx-sender)
 )
 
+;; Day 14 - Conditionals i (asserts)
+
+(define-read-only (show-asserts (num uint)) 
+( ok (asserts! (> num u2) (err u1)))
+)
+
+(define-constant error-too-large (err u10))
+(define-constant error-too-small (err u2))
+(define-constant error-not-auth (err u3))
+(define-constant admin-one tx-sender)
+(define-read-only (assert-admin) 
+    ( ok (asserts! (is-eq tx-sender admin-one) error-not-auth))
+)
+
