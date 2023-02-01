@@ -5,6 +5,14 @@
 ;; Cons, Vars, & Maps ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+;;Error messages 
+(define-constant ERR-TX-SENDER-NOT-NEXT-USER (err u0))
+(define-constant ERR-UPDATED-USER-NOT-EMPTY (err u1))
+(define-constant ERR-TX-SENDER-IS-NOT-ADMIN (err u2))
+(define-constant ERR-UPDATED-USER-IS-ADMIN (err u3))
+(define-constant ERR-UPDATED-USER-NOT-NEXT-USER (err u4))
+
 ;; Constant that sets deplopyer principal as admin ;;
 (define-constant admin tx-sender)
 
@@ -41,22 +49,41 @@
 
 (define-public (update-billboard (updated-user-name (string-ascii 24))) 
     (begin 
+
+
 ;; Assert that tx-sender is not-user (approved by admin)
-;; Assert that updated -user-name is not empty
+    (asserts! (is-eq tx-sender (var-get next-user)) ERR-TX-SENDER-NOT-NEXT-USER)
+
+;; Assert that updated user-name is not empty
+    (asserts! (not (is-eq updated-user-name  "")) ERR-UPDATED-USER-NOT-EMPTY)
+
+
 ;; Var-set billboard with new keys
-        (ok true)
+    (ok (var-set billboard {  
+      new-user-principal: tx-sender, 
+      new-user-name: updated-user-name
+    }))
     )
 )
+
+
 
 ;; Admin Set New User
 ;; @desc - function used by admin to set / give permission to next user
 
-(define-public (admin-set-new-user) 
-(begin 
+(define-public (admin-set-new-user (updated-user-principal principal)) 
+    (begin
 
     ;; Assert that tx-sender is admin
-    ;; Assert that updated-user-principal is NOT  admin
-    ;; Assert that updated-user-principal is NOT current next-user
-    ;; Var-set next-user with updated-user-principal
+    (asserts!  (is-eq tx-sender admin) ERR-TX-SENDER-IS-NOT-ADMIN)
 
-(ok true) ))
+    ;; Assert that updated-user-principal is NOT admin
+    (asserts! (not (is-eq tx-sender updated-user-principal)) ERR-UPDATED-USER-IS-ADMIN)
+
+    ;; Assert that updated-user-principal is NOT current next-user
+    (asserts! (not (is-eq updated-user-principal (var-get next-user))) ERR-UPDATED-USER-NOT-NEXT-USER)
+
+    ;; Var-set next-user with updated-user-principal
+    (ok (var-set next-user updated-user-principal))
+    )
+)
