@@ -1,4 +1,5 @@
 
+;; Day 20 Lists
 ;; title: clarity-basics-iii
 (define-read-only (list-bool)
     (list true false true)
@@ -39,3 +40,18 @@
 (define-read-only (index-of-principal-list (item principal))
     (index-of (var-get principal-list) item)
 )
+
+;; Day 21 Lists Continued and Intro to Unwrapping
+    (define-data-var list-day-21 (list 5 uint) (list u1 u2 u3 u4))
+    (define-read-only (list-length)
+        (len (var-get list-day-21))
+    )
+    (define-public (add-to-list (new-num uint)) 
+      (ok 
+      (var-set list-day-21
+        (unwrap! 
+            (as-max-len? (append (var-get list-day-21) new-num) u5)
+        (err u0))
+      )
+      )
+    )
