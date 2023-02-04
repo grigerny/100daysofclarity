@@ -55,3 +55,35 @@
       )
       )
     )
+
+
+;; Day 22 - Unwrapping 
+ (define-public (unwrap-example (new-num uint)) 
+      (ok 
+      (var-set list-day-21
+        (unwrap! 
+            (as-max-len? (append (var-get list-day-21) new-num) u5)
+        (err "error list at max-len"))
+      ))
+)
+
+ (define-public (unwrap-panic-example (new-num uint)) 
+      (ok (var-set list-day-21
+            (unwrap-panic (as-max-len? (append (var-get list-day-21) new-num) u5))
+            (err "another error")
+        ))
+    )
+
+(define-public (unwrap-err-example (input (response uint uint)))
+  (ok (unwrap-err! input (err u10)))
+)
+
+(define-public (try-example (input (response uint uint)))
+  (ok (try! input))
+)
+
+;; Unwrap! -> optionals & response
+;; Unwarp-err! -> response
+;; Unwrap-panic -> optional & response
+;; Unwrap-err-panic -> optional & response
+;; Try! -> optionals & response
