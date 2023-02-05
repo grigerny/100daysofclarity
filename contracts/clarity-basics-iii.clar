@@ -58,6 +58,12 @@
 
 
 ;; Day 22 - Unwrapping 
+;; Unwrap! -> optionals & response
+;; Unwarp-err! -> response
+;; Unwrap-panic -> optional & response
+;; Unwrap-err-panic -> optional & response
+;; Try! -> optionals & response
+
  (define-public (unwrap-example (new-num uint)) 
       (ok 
       (var-set list-day-21
@@ -82,8 +88,19 @@
   (ok (try! input))
 )
 
-;; Unwrap! -> optionals & response
-;; Unwarp-err! -> response
-;; Unwrap-panic -> optional & response
-;; Unwrap-err-panic -> optional & response
-;; Try! -> optionals & response
+;; Day 23 - Default-To / Get
+(define-constant example-tuple ( some {
+    example-bool: true, 
+    example-num: none,
+    example-string: none, 
+    example-principal: tx-sender
+}))
+
+(define-read-only (read-example-tuple1) 
+    (default-to {
+    example-bool: false, 
+    example-num: (some u1),
+    example-string: (some "World"), 
+    example-principal: tx-sender
+} example-tuple)
+)
