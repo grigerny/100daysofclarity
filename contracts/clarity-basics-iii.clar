@@ -104,3 +104,45 @@
     example-principal: tx-sender
 } example-tuple)
 )
+
+;; Day 24 - Conditionals Continued - Match & If
+
+(define-read-only (if-example (test-bool bool))  
+    (if test-bool
+    ;; Evaluates to true
+    "Evaluates to true"
+    ;; Evaluates to false
+    "Evaluates to false"
+    )
+)
+    
+(define-read-only (if-example-num (num uint))
+    (if (and (> num u0) (< num u10)) 
+    ;; Evaluates to true
+    num
+    ;; Evaluates to false
+    u10
+    )
+)
+
+(define-read-only (match-optional-some)
+(match (some u1) 
+    ;; Some value / there was some optional
+    match-value (+ u1 match-value) 
+    ;; None value / there was no optional
+    u0
+)
+)
+
+(define-read-only (match-optional (test-value (optional uint)))
+(match test-value
+ match-value (+ u2 match-value) 
+u0
+)
+)
+(define-read-only (match-response (test-value (response uint uint)))
+    (match test-value
+        ok-value ok-value
+        err-value u0
+    )
+)
