@@ -172,3 +172,31 @@ u0
     }))
 )
 
+ ;;Day 26 - Maps Cont.
+(define-public (insert-first-map (username (string-ascii 24)))
+    (ok (map-insert first-map tx-sender username))
+)
+
+(define-map third-map  { user: principal, cohort: uint } {
+    username: (string-ascii 24),
+    balance: uint,
+    referral: (optional principal)
+}
+)
+
+(define-public (set-third-map (new-username (string-ascii 24)) (new-balance uint) (new-referral (optional principal))) 
+    (ok (map-set third-map { user: tx-sender, cohort: u1} {
+    username: new-username,
+    balance: new-balance,
+    referral: new-referral
+    }))
+)
+
+(define-public (delete-third-map )
+   (ok  (map-delete third-map { user: tx-sender, cohort: u1}))
+)
+
+(define-read-only (read-third-map) 
+   (ok  (map-get? third-map { user: tx-sender, cohort: u1}))
+)
+
