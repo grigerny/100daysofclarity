@@ -79,11 +79,69 @@
 
 ;; Add a track
 
-(define-public (add-a-track (artist principal) (title (string-ascii 24)) (duration uint) (featured (optional principal)) (album-id uint))
+(define-public (add-a-track (artist (optional principal)) (title (string-ascii 24)) (duration uint) (featured (optional principal)) (album-id uint))
     (let 
         (
-            (test u0)
+           
+        (test u0)
+            ;;this is where my local variables go 
+
         )
+
+            ;; Check whether discography exists /if discography is-some  
+
+                ;; Discography exists
+
+                    ;; Map-set new album
+
+                    ;; Append new album to discgraphy
+
+
+                ;; Discography does not exist
+
+                    ;; Map-set new discography
+
+                    ;; map-set new album
+
+
+                ;; Append new album to discography 
+            ;;this is where my body goes
+            (ok test)
+    )
+)
+
+
+;; Add a album
+
+(define-public (add-album-or-create-dicsography-and-add-album (artist (optional principal)) (album-title (string-ascii 24)))
+(let 
+    (
+        (test u8)
+
+    )
+            ;;this is where my local variables go 
+
+        
+
+            ;; Check whether discography exists /if discography is-some  
+
+                ;; Discography exists
+
+                    ;; Map-set new album
+
+                    ;; Append new album to discgraphy
+
+
+                ;; Discography does not exist
+
+                    ;; Map-set new discography
+
+                    ;; map-set new album
+
+
+                ;; Append new album to discography 
+            ;;this is where my body goes
+           
     ;; Assert that tx-sender is either artist or admin
 
     ;; Assert that album exists in Discography
@@ -94,20 +152,43 @@
 
     ;; Map-set append track to album
 
-        (ok test)
-    )
+;; @desc - function that allows the artist or admin to add a new album or start a new discography & then add album 
+    (ok true)
 )
-
-;; @desc - function that allows a user or admin to add a track. 
-;; param - title (string-ascii 24), duration (uint, featured-artist (optional principal), )
-
-
+)
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Admin Functions ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Add Admin
+;; @desc - function that existing admin can add another admin 
+
+(define-public (add-domain (new-admin principal))
+(let 
+    (
+        (test u0)
+    )
+
+        (ok test)
+    )
+
+)
 ;; Remove Admin
+;; @desc - function that removes an existing admin
+;; @param - removed admin (principal)
+
+(define-public (remove-admin (remove-admin principal)) 
+    (let
+        (
+         (test u8)
+        )
+
+        ;; tx-sender is an existing admin
+        ;; Assert that removed-admin IS an existing admin
+        ;; 
+         (ok test)
+)
+)
 
 ;; Maps that keep track of a single track
 
