@@ -37,7 +37,7 @@
 (define-map album { artist: principal, album-id: uint } {
     tracks: (list 10 uint),
     published: uint,
-    height-published: (optional principal)
+    height-published: uint
     
 })
 
@@ -82,96 +82,80 @@
 
 ;; Add a track
 
-(define-public (add-a-track (artist (principal)) (title (string-ascii 24)) (duration uint) (featured (optional principal)) (album-id uint))
+(define-public (add-a-track (artist principal) (title (string-ascii 24)) (duration uint) (featured (optional principal)) (album-id uint))
     (let 
-        (
-            (current-discography (unwrap! (map-get? discography artist)) (err u0))
-            (current-album (unwrap! (index-of current-discography album-id)) (err u2))
-            (current-album-data (unwrap! (map-get? album {artist: artist, album-id: album-id})) (err u3))
+     (
+            (current-discography (unwrap! (map-get? discography artist) (err u0)))
+            (current-album (unwrap! (index-of current-discography album-id) (err u2)))
+            (current-album-data (unwrap! (map-get? album {artist: artist, album-id: album-id}) (err u3)))
             (current-album-tracks (get tracks current-album-data))
             (current-album-track-id (len current-album-tracks))
-            (next-album-track-id) (+ u1 current-album-tack-id)
-        )
+            (next-album-track-id (+ u1 current-album-track-id))
+     )
 
-            ;; Check whether discography exists /if discography is-some  
+         ;; Assert that tx-sender is either artist or admin
 
-                ;; Discography exists
+         (asserts! (or (is-eq tx-sender artist) (is-some (index-of (var-get admins) tx-sender))) (err u1))
 
-                    ;; Map-set new album
+        ;; Assert that duration is less than 600 seconds (10 mins)
+   
+        (asserts! (< duration u600) (err u3))
 
-                    ;; Append new album to discgraphy
-
-
-                ;; Discography does not exist
-
-                    ;; Map-set new discography
-
-                    ;; map-set new album
-
-
-                ;; Append new album to discography 
-            ;;this is where my body goes
+        ;; Map-set new track
+        (map-set track { artist: artist, album-id: album-id, track-id: next-album-track-id} {
+        title: title, 
+        duration: duration,
+        featured: featured
+        })
+        ;; Map-set album map by appending track to album
+         (ok (map-set album {artist: artist, album-id: album-id} 
+            (merge 
+                current-album-data
+                {tracks: (unwrap! (as-max-len? (append current-album-tracks next-album-track-id) u10) (err u4))}
+            )
+        ))
     )
 )
 
 ;; Add a album
 
-(define-public (add-album-or-create-dicsography-and-add-album (artist (optional principal)) (album-title (string-ascii 24)))
-(let 
-    (
-        (test u8)
+(define-public (add-album-or-create-dicsography-and-add-album (artist principal) (album-title (string-ascii 24)))
+    (let 
+     (
+        (current-discography (default-to (list ) (map-get? discography artist)))
+        (current-album-id (len current-discography))
+        (next-album-id (+ u1 current-album-id)) 
+     )       
+     
 
-    )
-            ;;this is where my local variables go 
+          ;; Check whether discography exists /if discography is-some  
+            (ok (if (is-eq current-album-id u0)
 
-        
-
-            ;; Check whether discography exists /if discography is-some  
+            ;; If true -> Empty discography
+            (begin 
+                (map-set discography artist (list current-album-id))
+                (map-set album {artist: artist, album-id: current-album-id } {
+                    title: album-title,
+                    tracks: (list ),
+                    height-published: height-published
+                })
+            )
 
                 ;; Discography exists
-
-                    ;; Map-set album map by appending album
-
-                    ;; Append new album to discgraphy
-
-
-                ;; Discography does not exist
-
-                    ;; Map-set new discography
-
-                    ;; map-set new album
-
-
-                ;; Append new album to discography 
-            ;;this is where my body goes
-           
-    ;; Assert that tx-sender is either artist or admin
-
-    (asserts! (or (is-eq tx-sender artist) (is-some (index-of (var-get admins) tx-sender))) (err u1))
-
-    ;; Assert that album exists in Discography
-
-    (asserts! (is-some (index-of current-discography album-id)) (err u2))
-    
-    ;; Assert that duration is less than 600 seconds (10 mins)
-    (asserts! (< duration 600) (err u3))
-
-    ;; Map-set new track
-    (map-set track {artist: artist, album-id: album-id, track-id: u0} {
-        title: title, 
-        duration: duration,
-        featured: featured
-    })
-
-    ;; Map-set album map by appending track to album
-    (ok (map-set album {artist: artist, album-id: album-id} 
-        (merge 
-             current-album-data
-             {tracks: (unwrap! (as-max-len? (append current-album-tracks next-album-track-id) u10) u4)}
-        )
-    ))
+            (begin 
+                (map-set discography artist (unwrap! (as-max-len? (append current-discography next-album-id) u10) (err u4)))
+                (map-set album {artist: artist, album-id: next-album-id } {
+                    title: album-title,
+                    tracks: (list ),
+                    height-published: height-published
+                })
+            )
+             
+                ))
     )
 )
+            
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Admin Functions ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
