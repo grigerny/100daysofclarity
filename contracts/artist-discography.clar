@@ -187,4 +187,4 @@
 ;; Maps that keep track of a discography
 ;; (define-map discography  principal (list 10 uint))
 
-;;Day 32 Reviewd Syntax (Optional Video)
+;;Day 32 Reviewed Syntax (Optional Video)
