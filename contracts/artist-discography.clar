@@ -101,36 +101,36 @@
 (define-public (add-album-or-create-discography-and-add-album (artist principal) (album-title (string-ascii 24)))
     (let 
         (
-
             (current-discography (default-to (list ) (map-get? discography artist)))
             (current-album-id (len current-discography))
             (next-album-id (+ u1 current-album-id)) 
         )       
-          ;; Check whether discography exists /if discography is-some  
+          ;; Check whether discography exists /if discography is-some 
             (ok (if (is-eq current-album-id u0)
 
-            ;; Empty discography
+        ;; If Discography is empty
             (begin 
                 (map-set discography artist (list current-album-id))
-                (map-set album {artist: artist, album-id: current-album-id } {
+                (map-set album {artist: artist, album-id: current-album-id} {
                     title: album-title,
                     tracks: (list ),
                     height-published: block-height
                 })
+
             )
 
-                ;; Discography exists
-            (begin 
-                (map-set discography artist (unwrap! (as-max-len? (append current-discography next-album-id) u10) (err u4)))
-                (map-set album {artist: artist, album-id: next-album-id } {
+        ;; If Discography Exists we append the next album ID
+            (begin
+                 (map-set discography artist (unwrap! (as-max-len? (append current-discography next-album-id) u10) (err u4)))
+                  (map-set album {artist: artist, album-id: next-album-id } {
                     title: album-title,
                     tracks: (list ),
                     height-published: block-height
                 })
             )
-             
-            ))
-    )
+            )            
+            
+    ))
 )
             
 
@@ -179,7 +179,7 @@
 ;; Maps that keep track of a single album
 
 ;; (define-map album { artist: principal, album-id: uint } {
-;;  tracks: (list 10 uint),
+;;  t: (list 10 uint),
 ;;  published: uint,
 ;;  height-published: (optional principal)   
 ;; })
@@ -187,4 +187,4 @@
 ;; Maps that keep track of a discography
 ;; (define-map discography  principal (list 10 uint))
 
-;;Day 32 Reviewed Syntax (Optional Video)
+;;Day 32 Reviewed Syntax (Optional Video) 

@@ -15,7 +15,7 @@
 ) 
 
 (define-read-only (params-optional (num (optional uint)) (string (optional (string-ascii 48))) (boolean (optional bool)))
-num
+    num
 )
 
 ;; Day 9 - Optional Pt. II
@@ -63,7 +63,7 @@ num
 ) 
 
 (define-public (change-name (new-name (string-ascii 24)))
-   (ok  (var-set fav-name-string-var new-name) )
+   (ok (var-set fav-name-string-var new-name))
 )
 
 (define-public (change-fav-num (new-num uint))
