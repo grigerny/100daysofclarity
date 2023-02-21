@@ -52,8 +52,27 @@
      (stx-transfer? u1000000 tx-sender 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5)
      )
      (define-public (send-stx-double) 
-        (begin 
+        (begin  
          (unwrap! (stx-transfer? u1000000 tx-sender 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5) (err u1))
-         (stx-transfer? u1000000 tx-sender 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG)
+         (stx-transfer? (/ u1000000 u10) tx-sender 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG)
         )
+     )
+
+     ;; Day 34 - stx-get-balance & Burn
+     ;; stx-get-balance
+
+     (define-read-only (balance-of) 
+        (stx-get-balance tx-sender)
+     )
+
+     (define-public (send-stx-balance)
+        (stx-transfer? (stx-get-balance tx-sender) tx-sender 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5)
+     )
+
+     (define-public (burn-some (amount uint))
+     (stx-burn? amount tx-sender)
+     )
+
+     (define-public (burn-half-of-balance) 
+        (stx-burn? (/ (stx-get-balance tx-sender) u2) tx-sender)
      )
