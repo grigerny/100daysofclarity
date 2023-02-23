@@ -76,3 +76,25 @@
      (define-public (burn-half-of-balance) 
         (stx-burn? (/ (stx-get-balance tx-sender) u2) tx-sender)
      )
+
+     ;; Day 35 - Block-height
+     (define-read-only (read-current-height)
+        block-height 
+     )
+
+     (define-constant day-in-blocks u144)
+     (define-read-only (has-a-day-passed) 
+        (if (> block-height day-in-blocks)
+            true
+            false
+        )
+     )
+
+     (define-read-only (has-a-week-passed) 
+     (if (> block-height (* day-in-blocks u7))
+            true
+            false
+        )
+     )
+
+     (define-constant deploy-height block-height)
