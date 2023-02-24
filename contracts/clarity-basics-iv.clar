@@ -98,3 +98,21 @@
      )
 
      (define-constant deploy-height block-height)
+
+     ;; Day 36 - As-Contract
+
+     ;; User (Principal) -> Contract
+     (define-public (send-to-contract-literal) 
+        (stx-transfer? u1000000 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.clarity-basics-iv)
+     )
+
+     (define-public (send-to-contract-context) 
+        (stx-transfer? u1000000 tx-sender (as-contract tx-sender))
+     )
+
+     ;; Contract -> Principal
+
+     (define-public (send-as-contract) 
+        (as-contract (stx-transfer? u1000000 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+     )
+     
