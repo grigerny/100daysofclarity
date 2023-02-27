@@ -26,6 +26,11 @@
 ;; Minimum wallet amount of 5 STX at initial deposit
 (define-constant min-create-wallet-fee u5000000)
 
+;; 18 Years in Blockheight
+;; 18 Years * 365 days * 144 blocks/day)
+(define-constant eighteen-years-in-block-height (* u18 (* u365 u144)))
+
+
 ;; List of Admins
 (define-data-var admins (list 10 principal) (list tx-sender))
 
@@ -39,7 +44,40 @@
     balance: uint
  })
 
-;;Read-only Functions;;
+;;READ-ONLY FUNCTIONS;;
+
+;; Get Wallet
+(define-read-only (get-child-wallet (parent principal)) 
+    (map-get? child-wallet parent)
+)
+
+;;Get Child Principal
+(define-read-only (get-child-wallet-principal (parent principal))
+    (get child-principal (map-get? child-wallet parent))
+)
+
+;;Get Child Wallet Balance;;
+(define-read-only (get-child-wallet-balance (parent principal))
+    (default-to u0 (get balance (map-get? child-wallet parent)))
+)
+
+;;Get Child DOB
+(define-read-only (get-child-wallet-dob (parent principal)) 
+    (get child-dob (map-get? child-wallet parent))
+)
+
+;;Get Child Wallet Unlock Height
+(define-read-only (get-child-wallet-unlock-height (parent principal))
+ (let 
+        (
+        ;; local variables (child dob)
+        (child-dob (unwrap! (get-child-wallet-dob parent) (err u0)))
+        ) 
+
+        ;; function body
+        (ok (+ child-dob eighteen-years-in-block-height))
+    )
+)
 
 ;;Parent Functions;;
 
