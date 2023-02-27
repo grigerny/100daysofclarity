@@ -9,7 +9,20 @@
 ;; We need to consider how many parents and children there are
 ;; principal -> {child-principal: principal, offspring-dob: uint, balance: ( uint)}
 
+;; App Flow
+;; 1. Create Wallet
+;; 2. Fund Wallet
+;; 3. Claim Wallet
+    ;; A. Child
+    ;; B. Parent/Admin
+
 ;;Constants, Variables, Maps
+
+;; Deployer
+(define-constant deployer tx-sender)
+
+;; Contract
+(define-constant contract (as-contract tx-sender))
 
 ;; Create Child Wallet Fee
 (define-constant create-wallet-fee u5000000)
@@ -44,7 +57,7 @@
     balance: uint
  })
 
-;;READ-ONLY FUNCTIONS;;
+;;READ-ONLY FUNCTIONSm;;
 
 ;; Get Wallet
 (define-read-only (get-child-wallet (parent principal)) 
@@ -79,10 +92,64 @@
     )
 )
 
+;; Get Total Fees
+(define-read-only (get-earned-fees) 
+    (var-get total-fees-earned)
+)
+
+
+;; Get STX in Contract
+
+;; Will use "as-contract" and "get-stx-balance"
+(define-read-only (get-contract-stx-balance) 
+    (stx-get-balance contract)    
+)
+
+;;;;;;;;;;;;;;;;;;;;
 ;;Parent Functions;;
+;;;;;;;;;;;;;;;;;;;;
+
+;; Create Wallet
+;; @desc - Create a new wallet with a parent, no initial deposit, this wallet is designed to be used by child
+;; @param - new-child-principal: principal, new-child-dob: uint
+
+(define-public (create-wallet (new-child-principal principal) (new-child-dob uint))
+(let (
+    ;; local variables go here
+    (test true)
+    
+    ) 
+    ;; Make sure that TX-Sender doesn't have any other wallet
+         ;; Assert that map-get? child-wallet is-none
+    
+    ;; Assert that new-child-dob is atleast higher than block-height - 18 years of blocks
+    
+    ;; Map-set child-wallet
+    (ok test)
+)
+)
+
+;; Fund Wallet
+;; @desc - allows anyone to fund an existing wallet
+;; @param - parent-principal: principal, amount: uint
+
+(define-public (fund-wallet (parent-principal principal) (amount uint))
+    (let (
+    ;; local variables go here
+        (test true)
+    
+         ) 
+     ;; Function body goes here
+        (ok test)
+    )
+)
+
+;; (define-map child-wallet principal {
+;;  child-principal: principal,
+;;   child-dob: uint,
+;;    balance: uint
+;;  })
 
 ;;Child Functions;;
 
 ;;Admin Functions;;
-
-
