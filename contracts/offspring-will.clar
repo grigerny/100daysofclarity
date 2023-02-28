@@ -37,7 +37,7 @@
 (define-constant normal-withdrawal-fee u2000000)
 
 ;; Minimum wallet amount of 5 STX at initial deposit
-(define-constant min-create-wallet-fee u5000000)
+(define-constant min-add-wallet-amount u5000000)
 
 ;; 18 Years in Blockheight
 ;; 18 Years * 365 days * 144 blocks/day)
@@ -123,6 +123,10 @@
          ;; Assert that map-get? child-wallet is-none
     
     ;; Assert that new-child-dob is atleast higher than block-height - 18 years of blocks
+
+    ;; Assert that new-child-principal is not an admin or tx-sender
+
+    ;; Pay create-wallet-fee in stx
     
     ;; Map-set child-wallet
     (ok test)
@@ -133,12 +137,24 @@
 ;; @desc - allows anyone to fund an existing wallet
 ;; @param - parent-principal: principal, amount: uint
 
-(define-public (fund-wallet (parent-principal principal) (amount uint))
-    (let (
+(define-public (fund-wallet (parent principal) (amount uint))
+    (let 
+    (
+    
     ;; local variables go here
         (test true)
-    
-         ) 
+        (current-child-wallet (unwrap! (map-get? child-wallet parent) (err "Err-no-child-wallet")))
+    )
+
+    ;; Assert that amount is higher than min-add-wallet-amount (5 STX)
+
+    ;; Send STX (amount - fee) to contract
+
+    ;; Send stx (fee) to deployer
+
+    ;; Var-set total-fees
+
+    ;; Map-set current child balance by merging
      ;; Function body goes here
         (ok test)
     )
@@ -150,6 +166,94 @@
 ;;    balance: uint
 ;;  })
 
+;;;;;;;;;;;;;;;;;;;
 ;;Child Functions;;
+;;;;;;;;;;;;;;;;;;;
 
-;;Admin Functions;;
+;; Claim Wallet
+;; @desc - allows child to claim wallet once and once only 
+;; @param - parent: prinicpal
+(define-public (claim-wallet (parent principal))
+
+(let 
+    (
+    (test true)
+    (current-child-wallet   (unwrap! (map-get? child-wallet parent) (err "err-no-child-wallet")))
+    )
+
+    ;; Assert that tx-sender is-eq to child-principal
+    ;; Assert that block-height is 18 years in block later than child-dob
+    ;; Send STX (amount - fee) to contract
+    ;; Send stx (fee) to deployer
+    ;; Delete Child Map
+    ;; Update total earned fees
+
+
+    (ok true)
+)
+
+)
+
+;;;;;;;;;;;;;;;;;;;
+;;Emergency Claim;;
+;;;;;;;;;;;;;;;;;;;
+
+
+;; Emergency Claim
+;; @desc - allow either parent or child or admin to withdrawn all stx (minus emergency withdraw fee), back to parent & remove wallet
+;; @param - parent: principal
+
+(define-public (emergency-claim (parent principal))
+    (let 
+        (
+            (test true)
+            (current-child-wallet (unwrap! (map-get? child-wallet parent) (err "err-no-child-wallet")))
+        )
+        ;; Assert that tx-sender parent or tx-sender is one of the admins
+        ;; Assert that block-height is less than 18 years from dob
+        ;; Send STX (amount - emeregency fee) to child
+        ;; Send stx emergency withdrawal fee to deployerr
+        ;; Delete Child Map
+        ;; Update total fees earned
+        
+        (ok test)
+    )
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Parent/Admin Functions;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Add Admin
+;; @desc - Function to add an admin
+;; parem - new-admin: prinicpal
+
+(define-public (add-admin) 
+    (let 
+    (
+        (test true)
+        ) 
+    ;; Assert that tx-sender is a current admin
+    ;; Assert that new-admin does not exist in list of admins
+    ;; Append new-admin to list of admins
+
+        (ok test))
+)
+
+;; Remove Admin
+;; desc - function to remove an admin
+;; param - removed-admin: principal
+
+(define-public (remove-admin)
+    (let 
+    (
+        (test true)
+    ) 
+
+;; Assert that tx-sender is a current admin
+
+;; Filter remove removed-admin
+        (ok test)
+    )
+)
