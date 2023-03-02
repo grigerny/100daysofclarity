@@ -109,27 +109,42 @@
 ;;Parent Functions;;
 ;;;;;;;;;;;;;;;;;;;;
 
-;; Create Wallet
+;; Create Wallet ;; 
 ;; @desc - Create a new wallet with a parent, no initial deposit, this wallet is designed to be used by child
 ;; @param - new-child-principal: principal, new-child-dob: uint
 
 (define-public (create-wallet (new-child-principal principal) (new-child-dob uint))
 (let (
     ;; local variables go here
+    (current-total-fees (var-get total-fees-earned))
+    (new-total-fees (+ current-total-fees create-wallet-fee))
     (test true)
     
     ) 
     ;; Make sure that TX-Sender doesn't have any other wallet
          ;; Assert that map-get? child-wallet is-none
+
+    (asserts! (is-none (map-get? child-wallet tx-sender)) (err "wallet already exists"))
     
     ;; Assert that new-child-dob is atleast higher than block-height - 18 years of blocks
+    ;; (asserts! (> new-child-dob (- block-height eighteen-years-in-block-height)) (err "err-past-18-years"))
 
     ;; Assert that new-child-principal is not an admin or tx-sender
 
-    ;; Pay create-wallet-fee in stx
+    (asserts! (or (not (is-eq tx-sender new-child-principal)) (is-none (index-of (var-get admins) new-child-principal)) ) (err "Invalid child prinicipal"))
+
+    ;; Pay create-wallet-fee in stx (5stx)
+    (unwrap! (stx-transfer? create-wallet-fee tx-sender deployer) (err "err-stx-transfer"))
+
+    ;; Var-set total-fees
+    (var-set total-fees-earned new-total-fees)
     
     ;; Map-set child-wallet
-    (ok test)
+    (ok (map-set child-wallet tx-sender {
+        child-principal: new-child-principal,
+        child-dob: new-child-dob,
+        balance: u0
+    }))
 )
 )
 
