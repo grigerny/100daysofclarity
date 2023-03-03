@@ -7,7 +7,7 @@
 ;; We will need a Wallet for the child of the parent
 ;; This is our main map that is created and funded by a parent and only unlockable by an assigned child (principal)
 ;; We need to consider how many parents and children there are
-;; principal -> {child-principal: principal, offspring-dob: uint, balance: ( uint)}
+;; principal -> {child-principal: principal, child-dob: uint, balance: ( uint)}
 
 ;; App Flow
 ;; 1. Create Wallet
@@ -150,28 +150,41 @@
 
 ;; Fund Wallet
 ;; @desc - allows anyone to fund an existing wallet
-;; @param - parent-principal: principal, amount: uint
+;; @param - parent principal: principal, amount: uint
 
 (define-public (fund-wallet (parent principal) (amount uint))
     (let 
     (
     
     ;; local variables go here
-        (test true)
         (current-child-wallet (unwrap! (map-get? child-wallet parent) (err "Err-no-child-wallet")))
+        (current-child-wallet-balance (get balance current-child-wallet))
+        (new-child-wallet-balance (+ (- amount add-wallet-funds-fee) current-child-wallet-balance))
+        (current-total-fees (var-get total-fees-earned))
+        (new-total-fees (+ current-total-fees min-add-wallet-amount))
     )
 
     ;; Assert that amount is higher than min-add-wallet-amount (5 STX)
+    (asserts! (> amount min-add-wallet-amount) (err "err-not-enough-stx"))
+
 
     ;; Send STX (amount - fee) to contract
+    (unwrap! (stx-transfer?  (- amount add-wallet-funds-fee) tx-sender contract) (err "err-stx-transfer-to-contract"))
 
     ;; Send stx (fee) to deployer
 
-    ;; Var-set total-fees
+    (unwrap! (stx-transfer? add-wallet-funds-fee tx-sender deployer) (err "err-stx-transfer-to-deployer"))
 
-    ;; Map-set current child balance by merging
-     ;; Function body goes here
-        (ok test)
+    ;; Var-set total-fees-earned
+    (var-set total-fees-earned new-total-fees)
+
+    ;; Map-set current child balance by merging with old balance + amount
+    (ok (map-set child-wallet parent
+        (merge 
+            current-child-wallet 
+            { balance: new-child-wallet-balance }  
+        )
+    ))
     )
 )
 
@@ -189,24 +202,35 @@
 ;; @desc - allows child to claim wallet once and once only 
 ;; @param - parent: prinicpal
 (define-public (claim-wallet (parent principal))
-
 (let 
     (
-    (test true)
-    (current-child-wallet   (unwrap! (map-get? child-wallet parent) (err "err-no-child-wallet")))
+        (current-child-wallet (unwrap! (map-get? child-wallet parent) (err "err-no-child-wallet")))
+        (current-child (get child-principal current-child-wallet))
+        (current-dob (get child-dob current-child-wallet))
+        (current-balance (get balance current-child-wallet))
+        (current-withdrawal-fee (/ (* current-balance u2) u100))
+        (current-total-fees (var-get total-fees-earned))
+        (new-total-fees (+ current-total-fees current-withdrawal-fee))
     )
 
     ;; Assert that tx-sender is-eq to child-principal
+    (asserts! (is-eq tx-sender current-child) (err "current-child-not-equal-to-child-principal"))
+
     ;; Assert that block-height is 18 years in block later than child-dob
+    (asserts! (> block-height (+ current-dob eighteen-years-in-block-height)) (err "err-child-dob-not-earlier-than-eighteen-years-in-block-height"))
+
     ;; Send STX (amount - fee) to contract
+    (unwrap! (as-contract (stx-transfer? (- current-balance current-withdrawal-fee) tx-sender current-child)) (err "err-transfer-stx"))
+
     ;; Send stx (fee) to deployer
+    (unwrap! (as-contract (stx-transfer? current-withdrawal-fee tx-sender deployer)) (err "err-sending-stx-deployer"))
+    
     ;; Delete Child Map
+    (map-delete child-wallet parent)
+
     ;; Update total earned fees
-
-
-    (ok true)
-)
-
+    (ok (var-set total-fees-earned new-total-fees))
+    )
 )
 
 ;;;;;;;;;;;;;;;;;;;
