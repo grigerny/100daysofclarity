@@ -57,7 +57,7 @@
     balance: uint
  })
 
-;;READ-ONLY FUNCTIONSm;;
+;;READ-ONLY FUNCTIONS;;
 
 ;; Get Wallet
 (define-read-only (get-child-wallet (parent principal)) 

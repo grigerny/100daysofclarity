@@ -24,3 +24,20 @@ Clarinet.test({
         assertEquals(block.height, 3);
     },
 });
+
+Clarinet.test({
+
+    name: "Get nonexistent child wallet, return none",
+    async fn(chain: Chain, accounts: Map<string, Account>) {
+
+        
+        let deploy = accounts.get("deployer")!;
+        let wallet_1 = accounts.get("wallet_1")!;
+        // All functions to test
+
+        let readResult = chain.callReadOnlyFn("offspring-will", "get-child-wallet", [types.principal(wallet_1.address)], deploy.address);
+        
+        readResult.result.expectNone();
+    
+    },
+})
