@@ -105,6 +105,14 @@
     (stx-get-balance contract)    
 )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Private Contracts ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define-private (is-parent-or-owner (parent principal))
+    (asserts! (or (is-eq tx-sender parent) (is-some (index-of (var-get admins) tx-sender))) false)
+)
+
 ;;;;;;;;;;;;;;;;;;;;
 ;;Parent Functions;;
 ;;;;;;;;;;;;;;;;;;;;
@@ -125,6 +133,8 @@
          ;; Assert that map-get? child-wallet is-none
 
     (asserts! (is-none (map-get? child-wallet tx-sender)) (err "wallet already exists"))
+
+    (is-parent-or-owner new-child-principal)
     
     ;; Assert that new-child-dob is atleast higher than block-height - 18 years of blocks
     ;; (asserts! (> new-child-dob (- block-height eighteen-years-in-block-height)) (err "err-past-18-years"))
