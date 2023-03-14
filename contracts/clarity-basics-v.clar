@@ -31,3 +31,29 @@
 (define-private (remove-evens (item uint))
     (not (is-eq (mod item u2) u0))
 )
+
+;; Day 47 - Lists continued with Map I
+(define-constant test-list-string (list "alice" "bob" "carl"))
+
+(define-read-only (test-map-increase-by-one) 
+    (map add-by-one test-list)
+
+)
+(define-read-only (test-map-double) 
+    (map double test-list)
+)
+
+(define-read-only (test-map-names) 
+    (map hello-name test-list-string))
+
+(define-private (add-by-one (item uint)) 
+    (+ item u1)
+)
+
+(define-private (double (item uint)) 
+    (* item u2)
+)
+
+(define-private (hello-name (item (string-ascii 24)))
+    (concat "hello " item)
+)
