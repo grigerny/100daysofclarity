@@ -1,3 +1,4 @@
+;; Day 51
 ;; SIP-09 locally so we can work with NFTs correctly
 ;; Reviewing more clarity fundamentals
 ;; Written by Gary Riger following 100DaysofClarity by Setzeus / StrataLabs
