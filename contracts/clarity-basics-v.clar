@@ -159,7 +159,7 @@
 (define-constant nft-price u10000000)
 (define-constant nft-admin tx-sender)
 
-(define-public (free-limited-mint)
+(define-public (free-limited-mint (metadata-url (string-ascii 256)))
     (let 
         (
             (current-index (var-get nft-index))
@@ -174,8 +174,52 @@
         ;; Mint NFT to TX-Sender
         (unwrap! (nft-mint? nft-test2 current-index tx-sender) (err "NFT mint error"))
 
+        ;; Update & Store Metadata URl
+        (map-set nft-metadata current-index metadata-url)
+
         ;; Var set NFT index by 1 
         (ok (var-set nft-index next-index))
      )
+)
+
+;; Day 54 - NFT Metadata Logic
+(define-constant static-url "https://heylayer.com/")
+(define-map nft-metadata uint (string-ascii 256))
+(define-public (get-token-uri-test-1 (id uint)) 
+    (ok static-url)
+)
+(define-public (get-token-uri-2 (id uint))
+    (ok (concat 
+        static-url 
+        (concat (uint-to-ascii id) ".json")
+    )
+ )
+)   
+
+(define-public (get-token-uri (id uint))
+    (ok (map-get? nft-metadata id))
+)   
+
+;; @desc utility function that takes in a unit & returns a string
+;; @param value; the unit we're casting into a string to concatenate
+;; thanks to Lnow for the guidance
+(define-read-only (uint-to-ascii (value uint)) 
+(if (<= value u9)
+(unwrap-panic (element-at "0123456789" value))
+(get r (fold uint-to-ascii-inner
+ 0x000000000000000000000000000000000000000000000000000000000000000000000000000000
+ {v: value, r: ""}
+))
+)
+)
+
+(define-read-only (uint-to-ascii-inner (i (buff 1)) (d {v: uint, r: (string-ascii 39)}))
+ (if (> (get v d) u0)
+ {
+    v: (/ (get v d) u10),
+    r: (unwrap-panic (as-max-len? (concat (unwrap-panic (element-at "0123456789" (mod (get v d) u10))) (get r d)) u39))
+ }
+ d
+ )
 )
 
