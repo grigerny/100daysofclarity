@@ -20,6 +20,9 @@
 ;;Root URL
 (define-constant collection-root-url "ipfs://ipfs/QmWRD5DjntwLL8WMDrMHnTVaXX1AtXoNBQouFG7kYHhhPE/")
 
+;;NFT Price
+(define-constant simple-nft-price u10000000)
+
 ;; SIP-09 ;;
 ;;;;;;;;;;;;
 (define-public (get-last-token-id)
@@ -48,9 +51,33 @@
         (nft-transfer? simple-nft id sender recipient)
     )
 )
-
+;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Core Mint Functions ;; 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Core MINT Function
+;; @desc - core function used for minting 1 NFT
+
+(define-public (mint) 
+  (let 
+    (
+      (current-index (var-get collection-index))
+      (next-index (+ current-index u1))
+    )
+
+    ;; Assert that current-index is lower than colleciton limit
+    (asserts! (< current-index collection-limit) (err "error we are all minted out"))
+
+    ;; Charge tx-sender for simple-NFT
+    (unwrap! (stx-transfer? simple-nft-price tx-sender (as-contract tx-sender)) (err "error stax transfer"))
+
+    ;; Mint NFT Simple
+    (ok (unwrap! (nft-mint? simple-nft current-index tx-sender) (err "error minting NFT")))
+  
+  )
+
+)
+
 
 ;; Helper Function ;;
 ;;;;;;;;;;;;;;;;;;;;;
@@ -77,4 +104,3 @@
  d
  )
 )
-
