@@ -47,3 +47,34 @@
      (ok (map-set whitelist-map whitelist-address mints-allocated))
  )    
 )
+
+;; Day 58 Non-Custodial Functions
+
+(define-map market uint {price: uint, owner: principal})
+(define-public (list-in-ustx (item uint) (price uint))
+    (let
+    (
+        (nft-owner (unwrap! (nft-get-owner? test-nft item) (err "err NFT doesn't exist")))
+    )
+
+        ;; Asserts that tx-sender is-eq to NFT owner
+        (asserts! (is-eq tx-sender nft-owner) (err "Err not owner"))
+
+        ;; Map set market with new NFT
+        (ok (map-set market item {price: price, owner: tx-sender}))
+    )
+)
+;; See the NFT
+(define-read-only (get-list-in-ust (item uint))
+    (map-get? market item)
+)
+
+;; When a user unlists their NFT
+(define-public (unlist-in-ustx (item uint))
+    (ok true)
+)
+
+;; When a user lists their NFT
+(define-public (buy-in-ustx (item uint))
+    (ok true)
+)
