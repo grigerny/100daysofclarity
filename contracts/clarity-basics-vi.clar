@@ -71,10 +71,37 @@
 
 ;; When a user unlists their NFT
 (define-public (unlist-in-ustx (item uint))
-    (ok true)
+    (let
+    (
+        (current-listing (unwrap! (map-get? market item) (err "err-listing-doesn't-exist")))
+         (current-price (get price current-listing))
+         (current-owner (get owner current-listing))
+    )
+    ;; Asserts that TX-sender is the owner
+    (asserts! (is-eq tx-sender current-owner) (err "err-not-owner"))
+
+    ;; Map delete existing listing
+    (ok (map-delete market item))
+
+    )
 )
 
 ;; When a user lists their NFT
 (define-public (buy-in-ustx (item uint))
-    (ok true)
+    (let 
+    (
+      (current-listing (unwrap! (map-get? market item) (err "err-listing-doesnt-exist")))
+      (current-price (get price current-listing))
+      (current-owner (get owner current-listing))
+    )
+
+    ;; tx-sender buys by transferring stx
+    (unwrap! (stx-transfer? current-price tx-sender current-owner) (err "err stx transfer"))
+
+    ;; transfer NFT to buyer
+    (unwrap! (nft-transfer? test-nft item current-owner tx-sender) (err "err nft transfer"))
+
+    ;; map-delete the listing
+    (ok (map-delete market item))
+  )
 )
