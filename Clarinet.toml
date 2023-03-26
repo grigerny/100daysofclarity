@@ -45,6 +45,11 @@ path = 'contracts/community-hello-world.clar'
 clarity_version = 1
 epoch = 2.0
 
+[contracts.nft-advanced]
+path = 'contracts/nft-advanced.clar'
+clarity_version = 1
+epoch = 2.0
+
 [contracts.nft-simple]
 path = 'contracts/nft-simple.clar'
 clarity_version = 1
