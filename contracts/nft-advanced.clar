@@ -17,7 +17,7 @@
 ;; (impl-trait .sip-09.nft-traits)
 
 ;; Collection Limit
-(define-constant collectoin-limit u10)
+(define-constant collection-limit u10)
 
 ;; Root URI
 (define-constant collection-root-uri "ipfs://ipfs/QmWRD5DjntwLL8WMDrMHnTVaXX1AtXoNBQouFG7kYHhhPE/")
@@ -172,8 +172,7 @@
         )
 
         ;; Assert that collection is not minted out (current-index < collection limit) 
-
-        (asserts! (< current-index (var-get collection-index)) (err "err-minted-out"))
+        (asserts! (< current-index collection-limit) (err "err-minted-out"))
 
         ;; Assert that user has mints left (whitelist mints > 0)
         (asserts! (> whitelist-mints u0) (err "err no mints left"))
@@ -214,14 +213,52 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Add to Whitelist
+(define-public (whitelist-principal (user principal) (mints uint))
+    (let
+        (
+            (whitelist-mints (unwrap! (map-get? whitelist-map user) (err "err-not-whitelisted")))
+        )
+            ;; Assert that tx-sender is an admin
+            (asserts! (is-some (index-of (var-get admins) tx-sender)) (err "tx-sender is not admin"))
+
+            ;; Assert that whitelist-mint is none (they didn't mint or have no mints)
+            (asserts! (is-none (some whitelist-mints)) (err "user already whitelisted"))
+
+            ;; Map set the whitelist-map
+            (ok (map-set whitelist-map user mints))
+      
+    )
+
+)
 
 ;; Check Whitelist Status
+(define-read-only (whitelist-status (user principal))
+    (map-get? whitelist-map user)
+
+)
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; ADMIN FUNCTIONS;;
 ;;;;;;;;;;;;;;;;;;;;;
 
 ;; Add Admin
+(define-public (add-admin (new-admin principal)) 
+    (let
+        (
+            (current-admins (var-get admins))
+        )
+    
+        ;; Assert that tx-sender is admin
+        (asserts! (is-some (index-of (var-get admins) tx-sender)) (err "err-not-admin"))
+
+        ;; Assert that new-admin is not already an admin
+        (asserts! (not (is-some (index-of (var-get admins) new-admin))) (err "err-not-admin"))
+
+        ;; Var-set admins by appending new-admin
+        (ok (var-set admins (unwrap! (as-max-len? (append current-admins new-admin) u10) (err "err-admin'overflow")))))
+
+   )
+
 
 ;; Remove Admin
 
