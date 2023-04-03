@@ -9,11 +9,14 @@
 ;; Only STX (no FT)
 
 ;; Selling an NFT Cycle
-;; 1. NFT is listed
-;; 2. NFT is purchased
-;; 3. STX is transferred 
-;; 4. NFT is transferred
-;; 5. Listing is deleted
+;; collection is submitted for whitelisting
+;; collection is whitelisted or rejected
+;; NFT(s) are listed
+;; NFT is purchased
+;; NFT is listed
+;; NFT is purchased
+;; STX/NFT is transferred 
+;; Listing is deleted
 
 
 ;; Conns, Variables and Maps ;;
@@ -51,9 +54,50 @@
 
 ;; Read Funcs ;;;
 ;;;;;;;;;;;;;;;;;
+;; get all whitelisted items (collections)
+(define-read-only (is-collection-whitelisted (nft-collection principal))
+    (map-get? whitelisted-collections nft-collection)
+)
+
+;; Get all listed items in a collection
+(define-read-only (listed (nft-collection principal))
+    (map-get? collection-listing nft-collection)
+)
+
+;; Get item status
+(define-read-only (item (nft-collection principal) (nft-item uint))
+    (map-get? item-status {collection: nft-collection, item: nft-item})
+)
+
+
+;; Buyer Funcs;;
+;;;;;;;;;;;;;;;;
+
+;; Buy item
+
 
 ;; Owner Funcs ;;
 ;;;;;;;;;;;;;;;;;
 
+;; List item
+
+;; Unlist item
+
+;; Change price
+
+;; Artist Funcs ;;
+;;;;;;;;;;;;;;;;;;
+
+;; Submit Collection
+
+;; Change royalty address
+
+
 ;; Admin Funcs ;;
 ;;;;;;;;;;;;;;;;;
+
+;; Accept/reject whitelistng
+
+;; Add an admin
+
+;; Remove an admin
