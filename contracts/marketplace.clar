@@ -74,8 +74,16 @@
 ;;;;;;;;;;;;;;;;
 
 ;; Buy item
-
-
+;; @descriptions - function that allows a principal to purchase a listed NFT
+;; @param - nft-collection:nft-trait, nft-item: uint
+(define-public (buy-item (nft-collection <nft>) (nft-item uint)) 
+ (let 
+      (
+        (test true)
+      )
+        (ok test)
+ )
+)   
 ;; Owner Funcs ;;
 ;;;;;;;;;;;;;;;;;
 
