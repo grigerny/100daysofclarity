@@ -84,13 +84,28 @@
  (let 
       (
         (test true)
+        (current-collection (unwrap! (map-get? collection (contract-of nft-collection)) (err "Err Collection")))
+        (current-royalty-percent (get royalty-percent current-collection))
+        (current-royalty-address (get royalty-address current-collection))
+        (current-listing (unwrap! (map-get? item-status {collection: (contract-of nft-collection), item: nft-item}) (err "err-item-not-listed")))
+        (current-collection-listings (unwrap! (map-get? collection-listing (contract-of nft-collection)) (err "err-collection-has-no-listing")))
+        
+        (current-listing-price (get price current-listing))
+        (current-listing-royalty (/ (* current-listing-price current-royalty-percent)))
+        (current-listing-owner (get owner current-listing))
       )
 
-      ;; Assert NFT Collection is whitelisted
       ;; Assert that item is listed
+      (asserts! (is-some (index-of current-collection-listings nft-item)) (err "err item not listed"))
+
       ;; Assert tx-sender is NOT Owner
+      (asserts! (not (is-eq tx-sender current-listing-owner)) (err "error-buyer-is-owner"))
+
       ;; Send STX (price - royalty) to owner
+      (unwrap! (stx-transfer? current-listing-price tx-sender current-listing-owner) (err "STX not sent"))
+
       ;; Transfer NFT from custodial/contract to buyer/NFT
+
       ;; Map-delete item-listng
 
         (ok test)
