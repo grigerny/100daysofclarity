@@ -29,15 +29,19 @@
 (define-data-var admins (list 10 principal) (list tx-sender)) 
 
 ;; Whtelist collections
+;; Three states
+;; Is-none -> Collection has not been submitted
+;; False -> collection has not been approved by admin
+;; True -> Collection has been whitelisted by admin
 (define-map whitelisted-collections principal bool)
 
 ;; Whitelist collection
 (define-map collection principal {
-    name: (string-ascii 62), 
+    name: (string-ascii 64), 
     royalty-percent: uint, 
-    royalty-address: principal 
-                                 }
-)
+    royalty-address: principal, 
+    whitelisted: bool
+    })
 
 ;; List of all for sale in collection
 (define-map collection-listing 
@@ -92,6 +96,24 @@
         (ok test)
  )
 )   
+
+;; Change royalty address
+
+(define-public (change-royalty-address (nft-collection principal) (new-royalty principal))
+    (let 
+        (
+            (test true)
+        ) 
+        ;; Assert that collection is whitelisted
+
+        ;; Assert that tx-sender is current royalty-address
+
+        ;; Merge / merge existing collection tuple with new royalty address
+        (ok test)
+    )
+)
+
+
 ;; Owner Funcs ;;
 ;;;;;;;;;;;;;;;;;
 
@@ -149,7 +171,7 @@
             ;; Assert that NFT current owner is contract
 
             ;; Assert that tx-sender is owner from item-status tuple
-            
+
             ;; Map-set merge item-status with new price
             (ok true)
     ) 
@@ -160,6 +182,23 @@
 
 ;; Submit Collection
 
+(define-public (submit-collection (nft-collection <nft>) (royalty-percent uint) (collection-name (string-ascii 64)))
+    (let 
+        (
+        (test true)  
+        )
+
+        ;; Assert that collection is not yet whitelisted by making sure it is-none
+
+        ;; Assert that tx-sender is the deployer of NFT parameter
+
+        ;; Map Set whitelisted-collections to false
+
+         (ok test)
+    )
+    
+)
+
 ;; Change royalty address
 
 
@@ -167,7 +206,46 @@
 ;;;;;;;;;;;;;;;;;
 
 ;; Accept/reject whitelistng
+(define-public (whitelisting-approval (nft-collection principal) (approval-boolean bool)) 
+(let 
+    (
+        (test true)
+    ) 
+
+    ;; Assert that whitelisting exists / is-some
+
+    ;; assert that tx-sender is an admin
+
+    ;; Map-set nft-collection with true as whitelisted
+        (ok test)
+)
+) 
 
 ;; Add an admin
 
+(define-public (add-admin (new-admin principal)) 
+(let 
+    (
+    (test true)
+    ) 
+    (ok test)
+)
+
+)
+
 ;; Remove an admin
+(define-public (remove-admin (admin principal)) 
+(let 
+    (
+        (test true)
+    ) 
+
+    ;; Assert that tx-sender is admin
+    ;; Assert that remove-admin exists
+    ;; Var-set helper principal
+    ;; Filter out remove-admin
+    
+        (ok test)
+)
+
+)
