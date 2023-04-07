@@ -179,6 +179,7 @@
     )
 )
 
+;; Day 71.5 
 ;; Change price
 (define-public (change-price (nft-collection <nft>) (nft-item uint) (nft-price uint)) 
     (let 
