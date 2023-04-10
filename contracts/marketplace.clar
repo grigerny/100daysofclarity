@@ -97,6 +97,7 @@
         (current-listing-price (get price current-listing))
         (current-listing-royalty (/ (* current-listing-price current-royalty-percent)))
         (current-listing-owner (get owner current-listing))
+        (current-tx-sender tx-sender)
       )
 
       ;; Assert that item is listed
@@ -112,7 +113,7 @@
       (unwrap! (stx-transfer? current-listing-royalty tx-sender current-royalty-address) (err "Error sending royalty payment"))
 
       ;; Transfer NFT from contract to buyer/NFT
-      (unwrap! (contract-call? nft-collection transfer nft-item (as-contract tx-sender) tx-sender ) (err "NFT transfer err"))
+      (unwrap! (as-contract (contract-call? nft-collection transfer nft-item tx-sender current-tx-sender)) (err "NFT transfer err"))
 
       ;; Map-delete item-listing
       (map-delete item-status {collection: (contract-of nft-collection), item: nft-item})
@@ -257,7 +258,7 @@
 
 ;; Submit Collection
 
-(define-public (submit-collection (nft-collection <nft>) (collection-name (string-ascii 64)) (royalty-percent uint) (collection-name (string-ascii 64)))
+(define-public (submit-collection (nft-collection <nft>) (royalty-percent uint) (collection-name (string-ascii 64)))
     (begin 
         ;; Assert that both collection and collection listings is-none
         (asserts! (and (is-none (map-get? collection (contract-of nft-collection))) (is-none (map-get? collection-listing (contract-of nft-collection)))) (err "Collection already exists"))
@@ -337,3 +338,13 @@
 (define-private (remove-uint-from-list (item-helper uint)) 
     (not (is-eq item-helper (var-get helper-uint)))
 )
+
+;; Day 74 Testing
+
+;; 1. Artist Submits a Collection
+    ;; Submit Simple NFT
+;; 2. Admin Approves a Collection
+;; 3. User Mints an NFT
+;; 4. User Lists an NFT
+;; 5.1 User buys an NFT
+;; 5.2 User unlists an NFT
