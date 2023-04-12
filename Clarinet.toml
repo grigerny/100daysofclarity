@@ -45,6 +45,11 @@ path = 'contracts/community-hello-world.clar'
 clarity_version = 1
 epoch = 2.0
 
+[contracts.ft-simple]
+path = 'contracts/ft-simple.clar'
+clarity_version = 1
+epoch = 2.0
+
 [contracts.marketplace]
 path = 'contracts/marketplace.clar'
 clarity_version = 1
