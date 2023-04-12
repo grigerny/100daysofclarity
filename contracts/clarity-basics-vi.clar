@@ -140,3 +140,5 @@
 (define-public (burn-test-token (amount uint) (sender principal))
   (ft-burn? test-token amount sender)
 )
+
+;; Day 77

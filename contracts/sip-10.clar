@@ -8,7 +8,7 @@
     ;; Transfer from user (principal) to user (principal)
     (transfer (uint principal principal (optional (buff 34))) (response bool uint))
     
-    ;; Human readable name of the toke
+    ;; Human readable name of the token
     (get-name () (response (string-ascii 32) uint))
 
     ;; Human readable Symbol
@@ -26,30 +26,5 @@
     ;; Optional Function URI
     (get-token-uri () (response (optional (string-utf8 256)) uint))
 
-    )
-
-    
+    )  
 )
-;;
-
-;; token definitions
-;; 
-
-;; constants
-;;
-
-;; data vars
-;;
-
-;; data maps
-;;
-
-;; public functions
-;;
-
-;; read only functions
-;;
-
-;; private functions
-;;
-
