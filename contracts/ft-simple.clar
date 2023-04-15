@@ -94,3 +94,5 @@
         (ok (map-set can-claim tx-sender false))
     )
 )
+
+;; Staking Claim
