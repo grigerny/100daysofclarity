@@ -9,7 +9,7 @@
 
 ;; You always need a map when working with tracking associated data
     ;; Map that keeps track of NFT Status 
-    (define-map nft-status uint {staked: bool, last-staked-or-claimed: uint})
+    (define-map nft-status uint {last-staked-or-claimed: (optional uint), staker: principal})
 
 
     ;; Map that keeps track of all user stakes
@@ -23,10 +23,10 @@
     (define-private (map-from-ids-to-hight-differences (item uint))
         (let
             (
-            (current-item-status (default-to {staked: true, last-staked-or-claimed: block-height} (map-get? nft-status item)))
+            (current-item-status (default-to {last-staked-or-claimed: (some block-height), staker: tx-sender} (map-get? nft-status item)))
             (current-item-height (get last-staked-or-claimed current-item-status))
             )
-        (- block-height current-item-height)
+        (- block-height (default-to u0 current-item-height))
     )
     )
 
@@ -81,11 +81,15 @@
          (test u0)
         )
 
-        ;; Assert that user ownes the NFT submitted
+        ;; Assert that user owns the NFT submitted
 
-        ;; Assert that NFT submitted is not staked
+        ;; Assert that NFT submitted is not already being staked
 
-        ;; Stake NFT
+        ;; Stake NFT Custodially - Transfer NFT from tx-sender to contract 
+
+        ;; update maps ( nft status )
+
+        ;; update maps ( user stakes )
 
         (ok true)
 
@@ -93,6 +97,36 @@
     )
 
     ;; UnStake NFT
+    ;; @desc - function to unstake a staked NFT
+        ;; Check if NFT is staked
+        ;; Unstake the NFT
+    ;; @param - item uint, NFT identifier for unstaking a staked item
+
+    (define-public (unstake-nft) 
+        (let 
+            (
+                (test true)
+            ) 
+
+        ;; assert that item is staked
+        ;; GARY ATTEMPT1: (asserts! (nft-status item) (err "Can't find nft status"))
+
+        ;; Check if tx-sender is staker
+        ;; GARY ATTEMPT2: (is-eq user-stakes tx-sender)
+
+        ;; Transfer the NFT from contract to staker/tx-sender
+
+        ;; If unclaimed balance > 0
+            ;; Send unclaimed balance
+            ;; Don't send
+
+        ;; Update the NFT Status Map
+        ;; Update user stakes map / unstakes the NFT
+    
+       (ok test)
+        )
+
+    )
 
     ;; Claim FT Reward
 
