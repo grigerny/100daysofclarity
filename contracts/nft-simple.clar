@@ -21,7 +21,7 @@
 (define-constant collection-root-url "ipfs://ipfs/QmWRD5DjntwLL8WMDrMHnTVaXX1AtXoNBQouFG7kYHhhPE/")
 
 ;;NFT Price
-(define-constant simple-nft-price u10000000)
+(define-constant simple-nft-price u100000)
 
 ;; SIP-09 ;;
 ;;;;;;;;;;;;
@@ -41,18 +41,22 @@
    )
 )
 
+;; Get token owner fuction
 (define-public (get-owner (id uint)) 
     (ok (nft-get-owner? simple-nft id))
 )
 
+;; Transfer Function
+
 (define-public (transfer (id uint) (sender principal) (recipient principal)) 
     (begin 
-        (asserts! (is-eq tx-sender sender) (err u1))
+        ;; (asserts! (is-eq tx-sender sender) (err u1))
         (nft-transfer? simple-nft id sender recipient)
     )
 )
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Core Mint Functions ;; 
+;; Core Functions ;; 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Core MINT Function
