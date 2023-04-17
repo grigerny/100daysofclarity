@@ -95,4 +95,3 @@
     )
 )
 
-;; Staking Claim
