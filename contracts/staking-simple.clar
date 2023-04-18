@@ -79,20 +79,33 @@
     (let
         (
             (current-nft-owner (unwrap! (contract-call? .nft-simple get-owner item) (err "item not minted")))
+            (current-user-stakes (default-to (list ) (map-get? user-stakes tx-sender)))
+            
         )
 
         ;; Assert that user owns the NFT submitted
         (asserts! (is-eq (some tx-sender) current-nft-owner) (err "Err not NFT Owner"))
 
         ;; Assert that NFT submitted is not already being staked
+            ;; Assert (asserts! () (err "NFT is already being staked"))
+            ;; NFT that is being submitted (do we have this?) "(asserts! (last-staked-or-claimed))"
+            ;; Not being staked
+        (asserts! (or
+        (is-none (map-get? nft-status item))
+            (is-none (get last-staked-or-claimed (default-to {last-staked-or-claimed: none, staker: tx-sender} (map-get? nft-status item))))
+        ) 
+        (err "err NFT already staked"))
 
         ;; Stake NFT Custodially - Transfer NFT from tx-sender to contract 
+        (unwrap! (contract-call? .nft-simple transfer item tx-sender (as-contract tx-sender)) (err "error transferring NFT"))
 
         ;; update maps ( nft status )
+        (map-set nft-status item {last-staked-or-claimed: (some block-height), staker: tx-sender})
 
         ;; update maps ( user stakes )
+        (ok (unwrap! (as-max-len? (append current-user-stakes item) u100) (err "user-stakes-overflow")))
 
-        (ok true)
+   
 
     )
     )
@@ -103,14 +116,17 @@
         ;; Unstake the NFT
     ;; @param - item uint, NFT identifier for unstaking a staked item
 
-    (define-public (unstake-nft) 
+    (define-public (unstake-nft (item uint)) 
         (let 
             (
+                (current-nft-status (unwrap! (map-get? nft-status item) (err "NFT not staked")))
+                (current-user-stakes (unwrap! (map-get? user-stakes tx-sender) (err "user has nothing staked")))
                 (test true)
             ) 
 
         ;; assert that item is staked
-        ;; GARY ATTEMPT1: (asserts! (nft-status item) (err "Can't find nft status"))
+        (asserts! (is-some (get last-staked-or-claimed current-nft-status)) (err "err NFT Not staked"))
+
 
         ;; Check if tx-sender is staker
         ;; GARY ATTEMPT2: (is-eq user-stakes tx-sender)
