@@ -95,3 +95,20 @@
     )
 )
 
+;; Staking Claim
+;; @desc - Function only for mining from staking claims
+;; @params - Amount (uint), the amount of tokens earned through staking
+(define-public (earned-ct) 
+    (let 
+        (
+            (test true)
+        ) 
+
+        ;; Assert amount is less than remaining supply
+            (ok test)
+
+        ;; Assert that contract-caller is .staking-simple
+
+        ;; Mint token to tx-sender
+    )
+)

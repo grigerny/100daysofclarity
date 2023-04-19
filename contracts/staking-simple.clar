@@ -15,6 +15,9 @@
     ;; Map that keeps track of all user stakes
     (define-map user-stakes principal (list  100 uint))
 
+    ;; Helper variable to remove a uint
+    (define-data-var helper-uint uint u0)
+
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Private Functions;;;
 ;;;;;;;;;;;;;;;;;;;;;;;
@@ -119,9 +122,12 @@
     (define-public (unstake-nft (item uint)) 
         (let 
             (
+                (current-tx-sender tx-sender)
                 (current-nft-status (unwrap! (map-get? nft-status item) (err "NFT not staked")))
+                (current-nft-status-last-height (unwrap! (get last-staked-or-claimed current-nft-status) (err "error can't get last staked or claimed" )))
+                (current-balance (- block-height current-nft-status-last-height))
+                (current-nft-staker (get staker current-nft-status))
                 (current-user-stakes (unwrap! (map-get? user-stakes tx-sender) (err "user has nothing staked")))
-                (test true)
             ) 
 
         ;; assert that item is staked
@@ -129,20 +135,31 @@
 
 
         ;; Check if tx-sender is staker
-        ;; GARY ATTEMPT2: (is-eq user-stakes tx-sender)
+        (asserts! (is-eq tx-sender current-nft-staker) (err "err not staker"))
 
         ;; Transfer the NFT from contract to staker/tx-sender
+        (unwrap! (as-contract (contract-call? .nft-simple transfer item tx-sender current-tx-sender)) (err "transferring NFT Error"))
 
-        ;; If unclaimed balance > 0
-            ;; Send unclaimed balance
-            ;; Don't send
+        ;; Send unclaimed balance
+        (unwrap! (contract-call? .ft-simple earned-ct) (err "Can't send unclaimed balance"))
 
-        ;; Update the NFT Status Map
+        ;; Delete NFT Status Map
+        (map-delete nft-status item)
+
+        ;; Update the helper uint
+        (var-set helper-uint item)
+
         ;; Update user stakes map / unstakes the NFT
+        (ok (map-set user-stakes current-tx-sender (filter filter-remove-uint current-user-stakes)))
     
-       (ok test)
+
         )
 
+    )
+
+    ;; Filter helper function to remova an ID from user-stakes
+    (define-private (filter-remove-uint (item uint)) 
+        (not (is-eq item (var-get helper-uint)))
     )
 
     ;; Claim FT Reward
@@ -151,22 +168,25 @@
     (define-public (claim-reward (item uint)) 
         (let 
             (
-            (test true)
+                (current-nft-status (unwrap! (map-get? nft-status item) (err "NFT not staked")))
+                (current-nft-status-last-height (unwrap! (get last-staked-or-claimed current-nft-status) (err "error can't get last staked or claimed" )))
+                (current-balance (- block-height current-nft-status-last-height))
+                (current-nft-staker (get staker current-nft-status))
+                (current-user-stakes (unwrap! (map-get? user-stakes tx-sender) (err "user has nothing staked")))
             ) 
-
-        ;; Assert that the item is actively staked
 
 
         ;; Assert that claimable balance is > 0
-
+        (asserts! (> current-balance u0) (err "Err Nothing to claim"))
 
         ;; Assert that tx-sender is staker in the stake-status map
-     
+        (asserts! (is-eq tx-sender current-nft-staker) (err "err-not-staker"))
 
-        ;; Calculate reward & mint from FT Contract
+        ;; send unclaimed balance
+        (unwrap! (contract-call? .ft-simple earned-ct) (err "Can't send unclaimed balance"))
         
         ;; Update NFT Stake Map
+        (ok (map-set nft-status item {last-staked-or-claimed: (some block-height), staker: tx-sender}))
 
-        (ok test)
         )
     )
