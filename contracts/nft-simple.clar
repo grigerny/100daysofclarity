@@ -73,11 +73,13 @@
     (asserts! (< current-index collection-limit) (err "error we are all minted out"))
 
     ;; Charge tx-sender for simple-NFT
-    (unwrap! (stx-transfer? simple-nft-price tx-sender (as-contract tx-sender)) (err "error stax transfer"))
+    ;; (unwrap! (stx-transfer? simple-nft-price tx-sender (as-contract tx-sender)) (err "error stax transfer"))
 
     ;; Mint NFT Simple
-    (ok (unwrap! (nft-mint? simple-nft current-index tx-sender) (err "error minting NFT")))
+    (unwrap! (nft-mint? simple-nft current-index tx-sender) (err "error minting NFT"))
   
+    ;; 
+      (ok (var-set collection-index next-index))
   )
 
 )
