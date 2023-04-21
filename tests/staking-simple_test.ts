@@ -57,3 +57,36 @@ Clarinet.test({
         // assertEquals(block.height, 3);
     },
 });
+
+Clarinet.test({
+    name: "Get unclaimed balance after 5 blocks",
+    async fn(chain: Chain, accounts: Map<string, Account>) {
+
+        let deployer = accounts.get("deployer")!;
+        let wallet_1 = accounts.get("wallet_1")!;
+
+        let mineBlock = chain.mineBlock([
+            Tx.contractCall("nft-simple", "mint", [], deployer.address) 
+        ]);
+
+        console.log(mintBlock.receipts[0].events)
+
+        chain.mineEmptyBlock(1)
+
+        let stakeBlock = chain.mineBlock((
+            Tx.contractCall("staking-simple", "stake-nft", [types.uint(1)], deployer.address)
+        ));
+
+            console.log(getUnclaimedBalance.result.events)
+
+            chain.mineEmptyBlock(5)
+
+            const getUnclaimedBalance = chain.callReadOnlyFn("staking-simple", "get-unclaimed-balance", [], deployer.address)
+
+            console.log(getUnclaimedBalance.result)
+
+            // assertEquals(getUnclaimedBalance, 3);
+            
+
+    },
+});
