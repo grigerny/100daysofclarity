@@ -141,7 +141,7 @@
         (unwrap! (as-contract (contract-call? .nft-simple transfer item tx-sender current-tx-sender)) (err "transferring NFT Error"))
 
         ;; Send unclaimed balance
-        (unwrap! (contract-call? .ft-simple transfer item tx-sender current-tx-sender) (err "Can't send unclaimed balance"))
+        (unwrap! (contract-call? .ft-simple transfer item tx-sender (current-tx-sender)) (err "Can't send unclaimed balance"))
 
         ;; Delete NFT Status Map
         (map-delete nft-status item)
