@@ -138,12 +138,12 @@
 )
 
 (define-public (burn-test-token (amount uint) (sender principal))
-  (ft-burn? test-token amount sender)
+  (ft-burn? test-token amount tx-sender)
 )
 
 ;; Day 90 - Buffers
 (define-read-only (test-element-at (test-buff (buff 30))) 
-  (element-at test-buff u0)
+  (element-at test-buff u1)
 )
 
 (define-read-only (test-index-of (test-buff (buff 30)))
@@ -153,3 +153,10 @@
 (define-read-only (test-conact (test-buff (buff 6))) 
   (concat test-buff 0x000000)
 )
+
+;; Day 91 - Buffers Cont/get-block-info? & Intro to VRF
+(define-read-only (test-get-block (block uint)) 
+  (get-block-info? vrf-seed block)
+)
+
+

@@ -140,9 +140,6 @@
         ;; Transfer the NFT from contract to staker/tx-sender
         (unwrap! (as-contract (contract-call? .nft-simple transfer item tx-sender current-tx-sender)) (err "transferring NFT Error"))
 
-        ;; Send unclaimed balance
-        (unwrap! (contract-call? .ft-simple transfer item tx-sender (current-tx-sender)) (err "Can't send unclaimed balance"))
-
         ;; Delete NFT Status Map
         (map-delete nft-status item)
 
@@ -173,6 +170,7 @@
                 (current-balance (- block-height current-nft-status-last-height))
                 (current-nft-staker (get staker current-nft-status))
                 (current-user-stakes (unwrap! (map-get? user-stakes tx-sender) (err "user has nothing staked")))
+                (earned-ct (unwrap! (map-get? user-stakes tx-sender) (err "test")))
             ) 
 
 
@@ -183,7 +181,7 @@
         (asserts! (is-eq tx-sender current-nft-staker) (err "err-not-staker"))
 
         ;; send unclaimed balance
-        (unwrap! (contract-call? .ft-simple earned-ct) (err "Can't send unclaimed balance"))
+        (unwrap! (as-contract (contract-call? .ft-simple earned-ct item)) (err "Can't send unclaimed balance"))
         
         ;; Update NFT Stake Map
         (ok (map-set nft-status item {last-staked-or-claimed: (some block-height), staker: tx-sender}))
