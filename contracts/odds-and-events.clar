@@ -25,11 +25,9 @@
 
     ;; Bet 
         ;; Create a Bet -> A bet needs to have principal A (Begins Game), Principal B (optional), Bet Amount, Bet Height
+        ;; Cancel Bet -> Manual or auto-expire? 
         ;; Match Bet -> Principal B spots Bet A and fills in the second slot. Bet is now locked until reveal height
         ;; Reveal Bet -> Once reveal-height is reached either player can call to reveal
-
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Cons, vars, Maps ;;
@@ -105,3 +103,47 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; Bet Function ;;;; 
 ;;;;;;;;;;;;;;;;;;;;;
+
+;; Open/Create Bet
+;; @desc - Public Function for creating an initial bet. Public function for cancelling a bet. Who is the Principal/tx-sender?
+;; @param - Amount (uint), amount of bet / bet size - Height (uint) which is the block we are betting on.
+(define-public (create-bet (amount uint) (height uint))
+    (let 
+    (
+        (test true)
+        (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
+        (current-active-user-bets (get active-bets current-user-bets)  )
+    )
+
+    ;; Assert that amount that is less than to 50 STX
+
+    ;; Assert that amount is factor of 5 (mod 5 =0)
+
+   ;; Assert that height is higher than (+ min-future-height blockheight) & lower than (max-future-height + blockheight)
+
+   ;; Assert that length of current-active-users-bets is less than 4
+
+   ;; Charge the create/match fee
+
+   ;; Send the STX to Escrow or Smart Contract
+
+   ;; Update Map and Data Structure
+    ;; Map Set current-user-bets
+    ;; Map-set update bets and open-bets
+
+         (ok test)
+)
+)
+
+;; Match/Join Bat
+;; @desc - public function for joining/matching an open bet
+;; @param - do we need any? 
+(define-public (match-bet (bet uint))
+    (let 
+        (
+        (current-bet (unwrap! (map-get? bets bet) (err "err-bet-doesnt-exist")))
+        (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
+        ) 
+       (ok current-user-bets)
+    )
+)
