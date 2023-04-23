@@ -81,12 +81,11 @@ Clarinet.test({
 
             chain.mineEmptyBlock(5)
 
-            const getUnclaimedBalance = chain.callReadOnlyFn("staking-simple", "get-unclaimed-balance", [], deployer.address)
+            //const getUnclaimedBalance = chain.callReadOnlyFn("staking-simple", "get-unclaimed-balance", [], deployer.address)
 
-            console.log(getUnclaimedBalance.result)
+            console.log(claimBlock.receipts[0])
 
             // assertEquals(getUnclaimedBalance, 3);
-            
-
+            assertEquals(chain.getAssetsMaps().assets['.simple-ft.clarity-token'][deployer.address], 6)
     },
 });

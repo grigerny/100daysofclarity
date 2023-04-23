@@ -98,17 +98,21 @@
 ;; Staking Claim
 ;; @desc - Function only for mining from staking claims
 ;; @params - Amount (uint), the amount of tokens earned through staking
-(define-public (earned-ct) 
+(define-public (earned-ct (amount uint)) 
     (let 
         (
-            (test true)
+          
+            (current-supply (unwrap! (get-total-supply) (err "Can't get total supply")))
+            (current-remaining-supply (- u100 current-supply))
         ) 
 
         ;; Assert amount is less than remaining supply
-            (ok test)
+        (asserts! (< amount current-remaining-supply) (err "err no FT mintes left"))
 
         ;; Assert that contract-caller is .staking-simple
+        (asserts! (is-eq contract-caller .staking-simple) (err "err not contract caller"))
 
         ;; Mint token to tx-sender
+       (ok (unwrap! (ft-mint? clarity-token amount tx-sender) (err "err-ft-minting")))
     )
 )
