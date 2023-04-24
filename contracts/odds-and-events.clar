@@ -58,6 +58,7 @@
 
 (define-map bets uint { 
     opens-bet: principal,
+    opens-bet-guess: bool,
     matches-bet: (optional principal),
     amount-bet: uint,
     height-bet: uint,
@@ -112,7 +113,7 @@
 ;; Open/Create Bet
 ;; @desc - Public Function for creating an initial bet. Public function for cancelling a bet. Who is the Principal/tx-sender?
 ;; @param - Amount (uint), amount of bet / bet size - Height (uint) which is the block we are betting on.
-(define-public (create-bet (amount uint) (height uint))
+(define-public (create-bet (amount uint) (height uint) (guess bool))
     (let 
     (
         (test true)
@@ -154,6 +155,9 @@
         (current-user-open-bets (get open-bets current-user-bets))
         (current-user-active-bets (get active-bets current-user-bets))
         (current-bet-height-bet (get height-bet current-bet))
+        (current-contract-wide-open-bets (var-get open-bets))
+        (current-contract-wide-active-bets (var-get active-bets))
+
         ) 
 
         ;; THIS IS WHEN SOMEONE IS JOINING AN EXISTING BET: 
@@ -172,10 +176,49 @@
 
         ;; Var-set helper-uint with bet
 
-        ;; Map-set user-bets
+        ;; Map-set open-bets by filtering out bet from current-contract-wide-open-bets using filter-out-uint
+
+        ;; Var-set active-bets by appending bet to current-contract-wide-active-bets
 
 
 
        (ok current-user-bets)
+    )
+)
+
+(define-private (filter-out-uint (bet uint))
+    (not (is-eq bet (var-get helper-uint)))
+)
+
+;;Reveal Bet
+;;@desc - Public function for either principal a or b to reveal & end an active bet
+;;@param - Bet (uint), the bet that we're ending
+(define-public (reveal-bet (bet uint))
+    (let 
+        (   
+        (current-bet (unwrap! (map-get? bets bet) (err "err-bet-doesnt-exist")))
+        (current-bet-height (get height-bet current-bet))
+        (current-bet-opener (get opens-bet current-bet))
+        (current-bet-opener-guess (get opens-bet-guess current-bet))
+        (current-bet-matcher (get matches-bet current-bet))
+        (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
+        (current-user-open-bets (get open-bets current-user-bets))
+        (current-user-active-bets (get active-bets current-user-bets))
+        (current-bet-height-bet (get height-bet current-bet))
+        (current-contract-wide-open-bets (var-get open-bets))
+        (current-contract-wide-active-bets (var-get active-bets))
+        (random-number-at-block (get-random-uint-at-block current-bet-height))
+        )
+
+        ;; Assert that bet is active by checking index-of-current-contract-wide-open-bets
+
+        ;; Assert that block-height is higher than current-bet-height
+
+        ;; Check if random number at block mod 2 == 0 
+            ;; if yes, random number is even
+            ;; if now, random number is odd
+
+        ;; Assert that 
+        (ok true)
     )
 )
