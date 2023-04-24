@@ -60,7 +60,7 @@
     opens-bet: principal,
     matches-bet: (optional principal),
     amount-bet: uint,
-    high-bet: uint,
+    height-bet: uint,
     winner: (optional principal)
      })
 
@@ -68,12 +68,17 @@
 (define-map user-bets principal {open-bets: (list 100 uint), active-bets: (list 3 uint)})
 
 
+;; Var for keeping track of the bet index
+(define-data-var bet-index uint u0)
+
 ;; We need a variable that lists all available bets (not yet active)
 (define-data-var open-bets (list 100 uint) (list ))
 
 ;; We need a variable that keeps track of active bets
 (define-data-var active-bets (list 100 uint) (list ))
 
+;; Helper var for filtering out uints
+(define-data-var helper-uint uint u0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Read Only Functions ;;
@@ -111,6 +116,8 @@
     (let 
     (
         (test true)
+        (current-bet-id (var-get bet-index))
+        (next-bet-id (var-get bet-index))
         (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
         (current-active-user-bets (get active-bets current-user-bets)  )
     )
@@ -121,15 +128,16 @@
 
    ;; Assert that height is higher than (+ min-future-height blockheight) & lower than (max-future-height + blockheight)
 
-   ;; Assert that length of current-active-users-bets is less than 4
-
    ;; Charge the create/match fee
 
    ;; Send the STX to Escrow or Smart Contract
 
    ;; Update Map and Data Structure
-    ;; Map Set current-user-bets
+    ;; Map-set current-user-bets
     ;; Map-set update bets and open-bets
+    ;; Map-set bets
+    ;; var-set current-bet-id next-idnex
+
 
          (ok test)
 )
@@ -143,7 +151,31 @@
         (
         (current-bet (unwrap! (map-get? bets bet) (err "err-bet-doesnt-exist")))
         (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
+        (current-user-open-bets (get open-bets current-user-bets))
+        (current-user-active-bets (get active-bets current-user-bets))
+        (current-bet-height-bet (get height-bet current-bet))
         ) 
+
+        ;; THIS IS WHEN SOMEONE IS JOINING AN EXISTING BET: 
+
+        ;; Assert that the block-height is less than or equal to the current 
+
+        ;; Assert that (just a name of a func -> ) current-user-active-bets is less than or equal to 3
+
+        ;; Transfer current-bet-amount in STX (as collatoral)
+
+        ;; Transfer create-match fee in STX (this is the fee to the game)
+
+        ;; Map-Set current-bet by merging current-bet with matches-bet
+
+        ;; Map-Set user-bets by appending bet to current-active-bets list
+
+        ;; Var-set helper-uint with bet
+
+        ;; Map-set user-bets
+
+
+
        (ok current-user-bets)
     )
 )
