@@ -228,6 +228,9 @@
         (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
         (current-user-open-bets (get open-bets current-user-bets))
         (current-user-active-bets (get active-bets current-user-bets))
+        (current-matcher-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets current-bet-matcher)))
+        (current-matcher-open-bets (get open-bets current-matcher-bets))
+        (current-matcher-active-bets (get active-bets current-matcher-bets))
         (current-bet-height-bet (get height-bet current-bet))
         (current-contract-wide-open-bets (var-get open-bets))
         (current-contract-wide-active-bets (var-get active-bets))
@@ -257,7 +260,7 @@
             (if (is-eq (mod random-number-at-block u2) u0)
             ;; if random is even
 
-            ;; Transfer double amount to opener
+            ;; Random number is EVEN
             (if current-bet-opener-guess
                 (begin 
                     (as-contract (unwrap! (stx-transfer? (* (get amount-bet current-bet) u2) tx-sender current-bet-opener) (err "err-stx-transfer")))
@@ -277,18 +280,40 @@
                 (map-set bets bet (merge current-bet {winner: (some current bet-matcher)}))
                 )
                 )
-            false
+
+                  ;; Random number is ODD
+            (if current-bet-opener-guess
+                (begin 
+                    (unwrap! (stx-transfer? (* (get amount-bet current-bet) u2) tx-sender current-bet-opener) (err "err-stx-transfer"))
+                )   
+
+            ;; Map-set bet by merging current-bet with {winner: {come current-bet-opener}}
+            (map-set bets bet (merge current-bet {winner: (some current-bet-opener)}))
+
+
+            ;; if random is odd
+            (begin 
+
+            ;; Transfer double amount to matcher
+                (unwrap! (stx-transfer? (* (get amount-bet current-bet) u2) tx-sender (some current-bet-matcher)) (err "err-stx-transfer"))
+
+            ;; Map-set bet by merging current-bet with {winner: (some current-bet-matcher)}
+                (map-set bets bet (merge current-bet {winner: (some current bet-matcher)}))
+                )
+                )
             )
 
-            ;; Send 2x current-bet-amount
-
            ;; var-set helper uint
+           (var-set helper-uint)
 
-           ;; Map-set active-bets by filtering out bet from active-bets
+           ;; var-set active-bets by filtering out bet from active-bets
+           (var-set active-bets (filter-out-uint current-contract-wide-active-bets))
 
-           ;; Map-set user-bets by merging current-user-bets with active-bets filtered out
+           ;; Map-set user-bets for opener
+           (map-set user-bets current-bet-opener {open-bets: (filter filter-out-uint current-user-open-bets), active-bets: current-user-active-bets})
 
-        (ok true)
+           ;; Map-set user-bets for matcher
+           (ok (map-set user-bets current-bet-matcher {open-bets: (filter filter-out-uint current-matcher-open-bets), active-bets: current-matcher-active-bets}))
     )
 )
 
