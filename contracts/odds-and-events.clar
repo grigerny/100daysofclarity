@@ -210,15 +210,91 @@
         (random-number-at-block (get-random-uint-at-block current-bet-height))
         )
 
-        ;; Assert that bet is active by checking index-of-current-contract-wide-open-bets
+        ;; Assert that bet is active by checking index-of current-contract-wide-open-bets
 
         ;; Assert that block-height is higher than current-bet-height
 
         ;; Check if random number at block mod 2 == 0 
-            ;; if yes, random number is even
-            ;; if now, random number is odd
+            ;; if random number is even
+                ;; Check if opener-guess is even
+                ;; Send double amount to opener
+                    ;; Map-set bet by merging current-bet with {winner: }
 
-        ;; Assert that 
+                ;; Send double amount to matcher
+                    ;; Map-set bet by merging current-bet with {winner: }
+
+
+            ;; if random number is odd
+                ;; check if opener-guess is even
+                ;; Send double amount to matcher
+                ;; Send double amount to open
+
+            ;; Send 2x current-bet-amount
+
+           ;; var-set helper uint
+
+           ;; Map-set active-bets by filtering out bet from active-bets
+
+           ;; Map-set user-bets by merging current-user-bets with active-bets filtered out
+
         (ok true)
     )
 )
+
+;; Day 97
+;; Cancel Bet
+;; @desc - Cancel an open bet
+;; @param - but (uint), that we are cancelling
+
+(define-public (cancel-bet (bet uint))
+    (let 
+        (
+        (current-bet (unwrap! (map-get? bets bet) (err "err-bet-doesnt-exist")))
+        (current-bet-opener (get opens-bet current-bet))
+        (current-bet-amount (get amount-bet current-bet))
+        (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
+        (current-user-open-bets (get open-bets current-user-bets))
+        (current-contract-wide-open-bets (var-get open-bets))
+        ) 
+
+    ;; Assert that TX-Sender is current bet opener
+
+    ;; Assert that current-bet matcher is none
+
+    ;; Assert that current-contract-wide-active-bets is none
+
+    ;; Assert taht current contract-wide-open-bets is some
+
+    ;; Assert that current user open bets index of bet is some
+
+    ;; Transfer STX amount (amount - 1) from contract to user
+
+    ;; Delete Map
+
+    ;; var-set helper-uint
+
+    ;; Map-set user-bets with filtered out open-bet
+
+    ;; Var-set  open-bets with filtered out open-bet
+
+    (ok true)
+    
+    )
+)
+
+;;;;;;;;;;;;;;;;;;;;;
+;; RANDOM FUNCTION ;;
+;;;;;;;;;;;;;;;;;;;;;
+
+ ;; Read the on-chain VRF and turn the lower 16 bytes into a uint
+ (define-read-only (get-random-uint-at-block (stacksBlock uint)) 
+    (let 
+    (
+        (vrf-lower-uint-opt (match (get-block-info? vrf-seed stacksBlock)
+            vrf-seed (some (buff-to-uint-le (lower-16-le vrf-seed)))
+            none))
+    ) 
+    vrf-lower-uint-opt
+    (try! (ok true))
+    )
+ )
