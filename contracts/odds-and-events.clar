@@ -224,19 +224,21 @@
         (current-bet-height (get height-bet current-bet))
         (current-bet-opener (get opens-bet current-bet))
         (current-bet-opener-guess (get opens-bet-guess current-bet))
-        (current-bet-matcher (get matches-bet current-bet))
+        (current-bet-matcher (unwrap! (get matches-bet current-bet) (err "no-bet-matcher")))
         (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
         (current-user-open-bets (get open-bets current-user-bets))
         (current-user-active-bets (get active-bets current-user-bets))
         (current-bet-height-bet (get height-bet current-bet))
         (current-contract-wide-open-bets (var-get open-bets))
         (current-contract-wide-active-bets (var-get active-bets))
-        (random-number-at-block (get-random-uint-at-block current-bet-height))
+        (random-number-at-block (unwrap! (get-random-uint-at-block current-bet-height) (err "err-random-number-at-block")))
         )
 
         ;; Assert that bet is active by checking index-of current-contract-wide-open-bets
+        (asserts! (is-some (index-of current-contract-wide-active-bets bet)) (err "err-bet-not-active"))
 
         ;; Assert that block-height is higher than current-bet-height
+        (asserts! (> block-height current-bet-height) (err "err-bet-height"))
 
         ;; Check if random number at block mod 2 == 0 
             ;; if random number is even
@@ -252,6 +254,31 @@
                 ;; check if opener-guess is even
                 ;; Send double amount to matcher
                 ;; Send double amount to open
+            (if (is-eq (mod random-number-at-block u2) u0)
+            ;; if random is even
+
+            ;; Transfer double amount to opener
+            (if current-bet-opener-guess
+                (begin 
+                    (as-contract (unwrap! (stx-transfer? (* (get amount-bet current-bet) u2) tx-sender current-bet-opener) (err "err-stx-transfer")))
+                )   
+
+            ;; Map-set bet by merging current-bet with {winner: {come current-bet-opener}}
+            (map-set bets bet (merge current-bet {winner: (some current-bet-opener)}))
+
+
+            ;; if random is odd
+            (begin 
+
+            ;; Transfer double amount to matcher
+                (unwrap! (stx-transfer? (* (get amount-bet current-bet) u2) tx-sender (some current-bet-matcher)) (err "err-stx-transfer"))
+
+            ;; Map-set bet by merging current-bet with {winner: (some current-bet-matcher)}
+                (map-set bets bet (merge current-bet {winner: (some current bet-matcher)}))
+                )
+                )
+            false
+            )
 
             ;; Send 2x current-bet-amount
 
@@ -265,7 +292,7 @@
     )
 )
 
-;; Day 97
+;; Day 97 & Day 99
 ;; Cancel Bet
 ;; @desc - Cancel an open bet
 ;; @param - but (uint), that we are cancelling
@@ -276,32 +303,41 @@
         (current-bet (unwrap! (map-get? bets bet) (err "err-bet-doesnt-exist")))
         (current-bet-opener (get opens-bet current-bet))
         (current-bet-amount (get amount-bet current-bet))
+        (current-bet-matcher (get matches-bet current-bet))
         (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
         (current-user-open-bets (get open-bets current-user-bets))
         (current-contract-wide-open-bets (var-get open-bets))
         ) 
 
     ;; Assert that TX-Sender is current bet opener
+    (asserts! (is-eq tx-sender current-bet-opener) (err "err-not-opener"))
 
     ;; Assert that current-bet matcher is none
+    (asserts! (is-none current-bet-matcher) (err "err-bet-already-matched"))
 
     ;; Assert that current-contract-wide-active-bets is none
+    (asserts! (is-none (index-of bet current-contract-wide-active-bets)) (err "err-bet-already-active"))
 
-    ;; Assert taht current contract-wide-open-bets is some
+    ;; Assert that current contract-wide-open-bets is some
+    (asserts! (is-some (index-of bet current-contract-wide-open-bets)) (err "err-bet-not-open"))
 
-    ;; Assert that current user open bets index of bet is some
+    ;; Assert that current-user-open-bets index of bet is some
+    (asserts! (is-some (index-of bet current-user-open-bets) (err "err-bet-not-open"))
 
     ;; Transfer STX amount (amount - 1) from contract to user
+    (as-contract (unwrap! (stx-transfer? (- current-bet-amount u1) (as-contract tx-sender) tx-sender) (err "err-transfer-failed"))))
 
     ;; Delete Map
+    (map-delete bets bet)
 
     ;; var-set helper-uint
+    (var-set helper-uint bet)
 
     ;; Map-set user-bets with filtered out open-bet
+    (map-set user-bets tx-sender (merge current-user-bets {open-bets: (filter filter-out-uint current-user-open-bets)}))
 
     ;; Var-set  open-bets with filtered out open-bet
-
-    (ok true)
+    (ok (var-set open-bets (filter filter-out-uint current-contract-wide-open-bets)))
     
     )
 )
